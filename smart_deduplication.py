@@ -9,7 +9,7 @@ from langchain.chains import RetrievalQA
 
 # --- 配置参数 ---
 # 确保 Ollama 服务正在运行，并且 Qwen2:7b 模型已拉取
-OLLAMA_MODEL = "qwen2:7b" 
+OLLAMA_MODEL = "qwen2.5:7b" 
 VECTOR_DB_PATH = "./chroma_db_requirements"
 COLLECTION_NAME = "hubei_nongxin_requirements"
 BASE_URL = "http://localhost:11434" # Ollama 默认地址
