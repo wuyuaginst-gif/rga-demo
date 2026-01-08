@@ -1,0 +1,14 @@
+# --- LLM/LangChain 核心依赖 ---
+# langchain-community 包含了 Ollama, ChromaDB, 嵌入模型等连接器
+langchain-community
+# langchain 核心库
+langchain
+
+# --- 向量数据库依赖 ---
+# ChromaDB 是一个轻量级的向量数据库，适合容器化部署
+chromadb
+
+# --- 通用工具 ---
+# 如果未来要封装成 Web API (例如用 FastAPI)，需要安装 uvicorn, pydantic 等
+# 为保证 Demo 简洁，此处仅包含核心运行依赖
+typing
