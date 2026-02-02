@@ -3,12 +3,16 @@
 langchain-community
 # langchain 核心库
 langchain
+# langchain-huggingface for HuggingFaceEmbeddings
+langchain-huggingface
+# langchain-openai for OpenAI client (compatible with vLLM)
+langchain-openai
+# sentence-transformers for local embeddings
+sentence-transformers
 
 # --- 向量数据库依赖 ---
 # ChromaDB 是一个轻量级的向量数据库，适合容器化部署
 chromadb
 
 # --- 通用工具 ---
-# 如果未来要封装成 Web API (例如用 FastAPI)，需要安装 uvicorn, pydantic 等
-# 为保证 Demo 简洁，此处仅包含核心运行依赖
 typing

@@ -1,18 +1,22 @@
 import os
 from typing import List, Dict
-from langchain_community.llms import Ollama
 from langchain.prompts import PromptTemplate
 from langchain.schema.document import Document
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import OpenAI
 from langchain.chains import RetrievalQA
 
 # --- 配置参数 ---
-# 确保 Ollama 服务正在运行，并且 Qwen2:7b 模型已拉取
-OLLAMA_MODEL = "qwen2.5:7b" 
+# vLLM 服务地址 (OpenAI 兼容 API)
+VLLM_API_BASE = "http://localhost:8090/v1"
+VLLM_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"  # 替换为你的模型名称
+
+# Embedding 模型配置 (vLLM 不提供 embeddings，使用 sentence-transformers)
+EMBEDDING_MODEL = "BAAI/bge-small-zh-v1.5"  # 中文 embedding 模型
+
 VECTOR_DB_PATH = "./chroma_db_requirements"
 COLLECTION_NAME = "hubei_nongxin_requirements"
-BASE_URL = "http://localhost:11434" # Ollama 默认地址
 
 # --- 1. 模拟历史需求数据 ---
 # 模拟您从历史 Excel 或系统导出的数据
@@ -51,11 +55,10 @@ HISTORICAL_REQUIREMENTS: List[Dict[str, str]] = [
 
 def build_knowledge_base():
     """将历史需求数据向量化并存储到 ChromaDB"""
-    
-    print("🚀 步骤 1: 初始化 Ollama Embeddings 模型...")
-    # 使用 Ollama 的 API 作为嵌入模型 (默认使用 'llama2'，但性能取决于模型)
-    # 在实际应用中，推荐使用专门的本地中文 Embedding 模型
-    embeddings = OllamaEmbeddings(model=OLLAMA_MODEL, base_url=BASE_URL)
+
+    print("🚀 步骤 1: 初始化 Embeddings 模型...")
+    # 使用 HuggingFace Embeddings (sentence-transformers)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
     # 将 Python Dict 转换为 LangChain Document 格式
     documents = []
@@ -85,9 +88,15 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
     :param new_requirement: 新需求的标题和内容
     """
     print("\n🔍 步骤 3: 正在对新需求进行智能查重分析...")
-    
-    # 初始化本地 LLM
-    llm = Ollama(model=OLLAMA_MODEL, base_url=BASE_URL)
+
+    # 初始化 vLLM (使用 OpenAI 兼容 API)
+    llm = OpenAI(
+        model=VLLM_MODEL,
+        openai_api_base=VLLM_API_BASE,
+        # vLLM 通常不需要 API Key，但 OpenAI 客户端可能要求，设置占位符
+        openai_api_key="EMPTY",
+        temperature=0.1
+    )
 
     # LangChain Prompt Template - 实现查重分析
     # 使用中文提示词，引导 LLM 进行角色扮演和结构化输出
