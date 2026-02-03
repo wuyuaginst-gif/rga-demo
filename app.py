@@ -1,7 +1,7 @@
 import os
 from typing import List, Dict
-from langchain.prompts import PromptTemplate
-from langchain.schema.document import Document
+from langchain_core.prompts import PromptTemplate
+from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAI
