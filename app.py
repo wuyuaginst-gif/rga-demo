@@ -94,7 +94,7 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
     # 初始化 vLLM (使用 OpenAI 兼容 API, Chat 模型)
     llm = ChatOpenAI(
         model=VLLM_MODEL,
-        openai_api_base=VLLM_API_BASE,
+        base_url=VLLM_API_BASE,
         api_key="EMPTY",
         temperature=0.1
     )
