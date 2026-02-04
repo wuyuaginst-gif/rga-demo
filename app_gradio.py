@@ -5,7 +5,7 @@ from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
-from langchain.chains import RetrievalQA
+from langchain_classic.chains import RetrievalQA
 import gradio as gr
 
 # --- 配置参数 ---
