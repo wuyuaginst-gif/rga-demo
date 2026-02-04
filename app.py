@@ -1,12 +1,11 @@
 import os
 from typing import List, Dict
-from langchain.chains import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.prompts import PromptTemplate
-from langchain_core.documents import Document
+from langchain.prompts import PromptTemplate
+from langchain.schema.document import Document
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAI
+from langchain.chains import RetrievalQA
 
 # --- 配置参数 ---
 # vLLM 服务地址 (OpenAI 兼容 API)
@@ -120,18 +119,20 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
         template=prompt_template, input_variables=["context", "question"]
     )
 
-    # 创建文档链和检索链
-    # 将所有检索到的文档塞入上下文
-    document_chain = create_stuff_documents_chain(llm, PROMPT)
+    # 创建 RetrievalQA 链
     # retriver 会自动根据新需求在向量数据库中搜索最相似的 K 个文档
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
-    qa_chain = create_retrieval_chain(retriever, document_chain)
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff", # 将所有检索到的文档塞入上下文
+        retriever=vectorstore.as_retriever(search_kwargs={"k": 2}), # 搜索最相似的2条
+        chain_type_kwargs={"prompt": PROMPT}
+    )
 
     # 运行查重分析链
-    result = qa_chain.invoke({"input": new_requirement})
+    result = qa_chain.invoke(new_requirement)
 
     print("\n--- AI 查重分析结果 ---")
-    print(result['answer'])
+    print(result['result'])
     print("------------------------")
 
 
