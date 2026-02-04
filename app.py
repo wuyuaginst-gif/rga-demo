@@ -91,8 +91,8 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
     """
     print("\n🔍 步骤 3: 正在对新需求进行智能查重分析...")
 
-    # 初始化 vLLM (使用 OpenAI 兼容 API)
-    llm = OpenAI(
+    # 初始化 vLLM (使用 OpenAI 兼容 API, Chat 模型)
+    llm = ChatOpenAI(
         model=VLLM_MODEL,
         openai_api_base=VLLM_API_BASE,
         api_key="EMPTY",
