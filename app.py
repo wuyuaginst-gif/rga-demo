@@ -1,11 +1,13 @@
 import os
 from typing import List, Dict
-from langchain.prompts import PromptTemplate
-from langchain.schema.document import Document
+from langchain_core.prompts import PromptTemplate
+from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_openai import OpenAI
-from langchain.chains import RetrievalQA
+#from langchain_openai import OpenAI
+#from langchain.chains import RetrievalQA
+from langchain_openai import ChatOpenAI
+from langchain_classic.chains import RetrievalQA
 
 # --- 配置参数 ---
 # vLLM 服务地址 (OpenAI 兼容 API)
@@ -71,8 +73,8 @@ def build_knowledge_base():
     print(f"📖 步骤 2: 正在创建/加载向量数据库到路径: {VECTOR_DB_PATH}")
     # 创建 ChromaDB 向量存储，并导入 Document
     vectorstore = Chroma.from_documents(
-        documents=documents, 
-        embedding=embeddings, 
+        documents=documents,
+        embedding=embeddings,
         persist_directory=VECTOR_DB_PATH,
         collection_name=COLLECTION_NAME
     )
@@ -93,7 +95,7 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
     llm = OpenAI(
         model=VLLM_MODEL,
         openai_api_base=VLLM_API_BASE,
-        openai_api_key="EMPTY",
+        api_key="EMPTY",
         temperature=0.1
     )
 
@@ -101,7 +103,7 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
     # 使用中文提示词，引导 LLM 进行角色扮演和结构化输出
     prompt_template = """
     你是一位资深的银行科技部门项目经理。你的任务是审核新的业务需求，并判断它是否与历史需求重复或高度相似。
-    
+
     【历史相似需求参考】：
     {context}
 
@@ -141,15 +143,15 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
 if __name__ == "__main__":
     # 1. 确保知识库已构建
     vector_db = build_knowledge_base()
-    
+
     # 2. 模拟一个新的需求提交（与 XQ-20230101-001/XQ-20230102-004 高度相似）
     NEW_REQUEST_1 = "业务部门要求在手机银行App上增加大额转账功能，并提供预约转账的选项。"
-    
+
     smart_deduplication_analysis(vector_db, NEW_REQUEST_1)
-    
+
     print("\n\n" + "="*50 + "\n")
-    
+
     # 3. 模拟另一个新的需求提交（不相似）
     NEW_REQUEST_2 = "需要调整内部人力资源系统的权限配置，增加一个“临时管理员”角色。"
-    
+
     smart_deduplication_analysis(vector_db, NEW_REQUEST_2)
