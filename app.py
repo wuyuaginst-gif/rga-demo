@@ -96,7 +96,8 @@ def smart_deduplication_analysis(vectorstore: Chroma, new_requirement: str):
         model=VLLM_MODEL,
         base_url=VLLM_API_BASE,
         api_key="EMPTY",
-        temperature=0.1
+        temperature=0.1,
+        http_client_kwargs={"timeout": 300}
     )
 
     # LangChain Prompt Template - 实现查重分析
