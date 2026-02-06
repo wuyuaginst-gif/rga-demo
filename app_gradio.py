@@ -813,7 +813,7 @@ with gr.Blocks(css=CSS, theme=gr.themes.Soft()) as demo:
                             continue
 
                     status_emoji = "✅" if req["status"] == "已上线" else "🔄" if "开发" in req["status"] else "📋"
-                    priority_🔴" if req["priority"] ==emoji = " "高" else "🟡" if req["priority"] == "中" else "🟢"
+                    priority_emoji = "🔴" if req["priority"] == "高" else "🟡" if req["priority"] == "中" else "🟢"
 
                     result += f"""### {status_emoji} {req['id']} - {req['title']}
 
